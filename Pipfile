@@ -1,0 +1,14 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+aiohttp = "*"
+sqlalchemy = "==1.4.0b1"
+aiohttp-swagger = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
