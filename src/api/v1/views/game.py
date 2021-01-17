@@ -3,6 +3,6 @@ from context import ViewWithContext
 import json
 
 
-class GameView(web.View, ViewWithContext):
+class GameView(ViewWithContext):
     async def get(self):
-        return web.Response(text=json.dumps({ "name": 'lol' }), content_type="application/json")
+        return web.json_response({"name": 'lol'})

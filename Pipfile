@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 aiohttp = "*"
 sqlalchemy = "==1.4.0b1"
+pyjwt = "*"
 aiohttp-swagger = "*"
 
 [dev-packages]

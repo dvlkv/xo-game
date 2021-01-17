@@ -5,13 +5,11 @@ from dataclasses import dataclass
 from typing import Optional
 import uuid
 import re
-from hashlib import sha256
+from utils import sha256
+from ..errors import *
 
 email_regex = re.compile("""(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])""")
 
-def hash(value: str) -> str:
-    """Creates sha256 hash of value represented as hex string"""
-    return sha256(value.encode('utf-8')).hexdigest()
 
 @dataclass
 class UserModel:
@@ -21,35 +19,37 @@ class UserModel:
 
     def __post_init__(self):
         if not email_regex.match(self.email):
-            raise ValueError('"email" should be valid email address')
+            raise FieldError('email', 'Email should be valid email address')
         if len(self.name.strip()) == 0:
-            raise ValueError('"name" cannot be empty')
+            raise FieldError('name', 'Name cannot be empty')
         if len(self.password.strip()) < 6:
-            raise ValueError('"password" length should be greater or equal then 6')
+            raise FieldError('password', 'Password length should be greater or equal then 6')
 
 
 class UserRepo:
     async def user_by_id(self, ctx: Context, id: int) -> Optional[User]:
         stmt = select(User).where(User.id == id)
         user = await ctx.session.execute(stmt)
-        return user.first()[0]
+        res = user.first()
+        return res[0] if res else None
 
     async def user_by_email(self, ctx: Context, email: str) -> Optional[User]:
         stmt = select(User).where(User.email == email)
         user = await ctx.session.execute(stmt)
-        return user.first()[0]
+        res = user.first()
+        return res[0] if res else None
 
     async def create_user(self, ctx: Context, input: UserModel) -> User:
         salt = str(uuid.uuid4())
+        existing = await self.user_by_email(ctx, input.email)
+        if existing:
+            raise EntityAlreadyExists("User with same email already exists")
         user = User(
             email=input.email,
             name=input.name,
-            password=hash(input.password + salt),
+            password=sha256(input.password + salt),
             password_salt=salt,
         )
         ctx.session.add(user)
         await ctx.session.flush()
         return user
-
-    def authorize_user(self, ctx: Context, email: str, password: str) -> str:
-        pass

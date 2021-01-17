@@ -1,6 +1,8 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 from ..base import Base
+from utils.dict import pick
+import json
 
 
 class User(Base):
@@ -16,3 +18,6 @@ class User(Base):
 
     def __repr__(self):
         return "<User(email='%s')>" % (self.email)
+
+    def to_json(self):
+        return pick(self.__dict__, ['id', 'name', 'email'])
