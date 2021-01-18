@@ -21,6 +21,8 @@ class Game(Base):
     height = Column(Integer)
 
     ended = Column(Boolean)
+    winned = Column(Boolean)
+
     field = Column(ARRAY(Integer))
     next_seq = Column(Integer)
 

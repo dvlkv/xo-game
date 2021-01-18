@@ -2,8 +2,6 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 from ..base import Base
 from utils.dict import pick
-import json
-
 
 class User(Base):
     __tablename__ = 'users'
