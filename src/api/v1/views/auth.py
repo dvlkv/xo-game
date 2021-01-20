@@ -1,6 +1,9 @@
+from typing import Optional
+
+from container import Services
 from context import ViewWithContext
-from aiohttp.web import json_response
-from modules import Auth, FieldError
+from aiohttp.web import json_response, Request
+from modules import FieldError
 
 
 class AuthView(ViewWithContext):
@@ -10,5 +13,4 @@ class AuthView(ViewWithContext):
             raise FieldError('email', 'Email is empty')
         if not req['password']:
             raise FieldError('password', 'Password is empty')
-        
-        return json_response({"token": await Auth.authorize_user(self.ctx(), req['email'], req['password'])})
+        return json_response({"token": await Services.Auth().authorize_user(self.ctx(), req['email'], req['password'])})

@@ -1,8 +1,6 @@
 from sqlalchemy import *
 from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import UUID
 from typing import NamedTuple
-import uuid
 from ..base import Base
 
 
@@ -20,8 +18,9 @@ class Game(Base):
     width = Column(Integer)
     height = Column(Integer)
 
+    started_at = Column(DateTime)
     ended = Column(Boolean)
-    winned = Column(Boolean)
+    won = Column(Boolean)
 
     field = Column(ARRAY(Integer))
     next_seq = Column(Integer)
@@ -33,20 +32,5 @@ class Game(Base):
 
     def __repr__(self):
         return "<Game (width='%s', height='%s')>" % self.field_size()
-
-
-class GameMove(Base):
-    __tablename__ = 'game_moves'
-    __table_args__ = (
-        UniqueConstraint('game_id', 'seq'),
-    )
-
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True)
-    game_id = Column(Integer, ForeignKey('games.id'))
-    seq = Column(Integer)
-
-    uid = Column(Integer)
-    x = Column(Integer)
-    y = Column(Integer)
 
 

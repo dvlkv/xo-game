@@ -1,3 +1,1 @@
-from .module import *
-
-Auth = AuthModule()
+from .module import AuthModule

@@ -1,3 +1,1 @@
-from .repo import *
-
-Games = GameRepo()
+from .module import GameModule

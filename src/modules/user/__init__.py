@@ -1,3 +1,2 @@
-from .repo import *
-
-Users = UserRepo()
+from .module import UserModule
+from .repo import UserModel

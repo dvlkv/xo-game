@@ -8,6 +8,9 @@ aiohttp = "*"
 sqlalchemy = "==1.4.0b1"
 pyjwt = "*"
 aiohttp-swagger = "*"
+dependency-injector = "*"
+pytest-asyncio = "*"
+pytest = "*"
 
 [dev-packages]
 
