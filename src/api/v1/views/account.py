@@ -9,7 +9,7 @@ from modules import UserModel
 class AccountView(ViewWithContext):
     @authorized
     async def get(self):
-        return (await Services.Users().user_by_id(self.ctx(), self.ctx().uid)).to_json()
+        return web.json_response((await Services.Users().user_by_id(self.ctx(), self.ctx().uid)).to_json())
 
     async def post(self):
         inp = await self.request.json()

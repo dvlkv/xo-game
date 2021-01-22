@@ -17,6 +17,97 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The user id
+        name:
+          type: string
+          description: The user name
+        email:
+          type: string
+          description: The user email
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+          description: The user JWT token
+    PaginatedCollection:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total items count
+        cursor:
+          oneOf:
+          - type: integer
+          - type: string
+    Game:
+      type: object
+      properties:
+        id:
+          type: integer
+        uid:
+          type: integer
+        size:
+          type: integer
+        next_seq:
+          type: integer
+        ended:
+          type: boolean
+        duration:
+          type: integer
+        winner:
+          type: integer
+        started_at:
+          type: integer
+        field:
+          type: array
+          items:
+            type: array
+            items:
+              type: integer
+    GameMove:
+        type: object
+        properties:
+          id:
+            type: string
+          game_id:
+            type: integer
+          seq:
+            type: integer
+          uid:
+            type: integer
+          x:
+            type: integer
+          y:
+            type: integer
+          time:
+            type: integer
+    GameWithMoves:
+      allOf:
+        - $ref: '#/components/schemas/Game'
+        - properties:
+            moves:
+              $ref: '#/components/schemas/GameMove'
+    GenericError:
+      type: object
+      properties:
+        error:
+          type: boolean
+        text:
+          type: string
+    FieldError:
+      allOf:
+        - $ref: "#/components/schemas/GenericError"
+        - properties:
+            field:
+              type: string
+
 security:
   - BearerAuth: []
 
@@ -30,10 +121,22 @@ paths:
       responses:
         "200":
           description: Successful operation. Return user json object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
         "401":
           description: Unauthorized access error. Returns error object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
         "500":
           description: Unexpected server error. Returns error object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
     post:
       description: Creates user
       tags:
@@ -55,12 +158,34 @@ paths:
       responses:
         "200":
           description: Successful operation. Return user json object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
         "401":
           description: Unauthorized access error. Returns error object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+        "400":
+          description: Invalid input. Returns error object with invalid field
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FieldError'
         "409":
           description: User already exists error. Returns error object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
         "500":
           description: Unexpected server error. Returns error object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
 
   /auth:
     post:
@@ -83,19 +208,62 @@ paths:
       responses:
         "200":
           description: Successful operation. Return jwt token object
-        "401":
-          description: Unauthorized access error. Returns error object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        "400":
+          description: Invalid input. Returns error object with invalid field
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FieldError'
         "500":
           description: Unexpected server error. Returns error object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
 
   /games:
     get:
       description: Get user games
       tags:
         - Game
+      parameters:
+        - name: count
+          in: query
+          schema:
+            type: integer
+        - name: from
+          in: query
+          schema:
+            type: integer
       responses:
         "200":
           description: Successful operation. Returns history of user games
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/PaginatedCollection'
+                - properties:
+                    items:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Game'
+        "401":
+          description: Unauthorized access error. Returns error object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+        "500":
+          description: "Unexpected server error. Returns error object"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
     post:
       description: Start a new game
       tags:
@@ -113,6 +281,28 @@ paths:
       responses:
         "200":
           description: Successful operation. Returns game object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameWithMoves'
+        "400":
+          description: Invalid input. Returns error object with invalid field
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FieldError'
+        "401":
+          description: Unauthorized access error. Returns error object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+        "500":
+          description: "Unexpected server error. Returns error object"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
 
   "/games/{id}":
     get:
@@ -128,6 +318,22 @@ paths:
       responses:
         "200":
           description: Successful operation. Returns game object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameWithMoves'
+        "401":
+          description: Unauthorized access error. Returns error object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+        "500":
+          description: "Unexpected server error. Returns error object"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
 
     post:
       description: Make a move
@@ -155,10 +361,22 @@ paths:
                   type: integer
       responses:
         "200":
-          description: Successful operation. Returns game object and next computer's move
+          description: Successful operation. Returns game object and moves
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameWithMoves'
         "400":
           description: "Invalid parameters. Returns error object with current game"
         "500":
-          description: Unexpected server error. Returns error object
-
-
+          description: "Unexpected server error. Returns error object"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+        "401":
+          description: Unauthorized access error. Returns error object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'

@@ -1,7 +1,5 @@
 from datetime import datetime
-
 from sqlalchemy.orm import joinedload, raiseload
-
 from db import Game, GameMove
 from context import Context
 from .checker import check_winner
@@ -12,8 +10,9 @@ from sqlalchemy import *
 
 class GameRepo:
     async def get_games(self, ctx: Context, uid: int, cursor: int, count: int) -> PaginatedCollection[Game]:
+        print(cursor)
         result = await ctx.session.execute(
-            select(Game).where(Game.uid == uid and Game.id > cursor).order_by(Game.id).limit(count)
+            select(Game).where(Game.uid == uid, Game.id > cursor).order_by(Game.id).limit(count)
         )
         data: list[Game] = [e for e, in result.unique()]
         result = await ctx.session.execute(
