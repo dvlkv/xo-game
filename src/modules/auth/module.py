@@ -2,7 +2,7 @@ from context import Context
 from db.entities.user import User
 from modules import UnauthorizedAccessError, UserModule
 from utils import sha256
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 import jwt
 
 AUTH_SECRET = "some secret that should be stored in config"
@@ -36,8 +36,10 @@ class AuthModule:
         )
         return encoded
 
-    async def authorize_user(self, ctx: Context, token: str) -> User:
+    async def authorize_user(self, ctx: Context, token: str) -> Optional[User]:
         """Authorizes user by JWT token, returns entity if token is valid"""
-        decoded = jwt.decode(token, AUTH_SECRET, algorithm="HS256")
-        print(decoded['id'])
-
+        try:
+            decoded = jwt.decode(token, AUTH_SECRET, algorithms=["HS256"])
+            return await self.users.user_by_id(ctx, int(decoded['id']))
+        except jwt.DecodeError:
+            return None

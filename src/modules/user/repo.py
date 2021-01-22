@@ -47,7 +47,7 @@ class UserRepo:
         salt = str(uuid.uuid4())
         existing = await self.user_by_email(ctx, input.email.strip())
         if existing:
-            raise EntityAlreadyExists("User with same email already exists")
+            raise EntityAlreadyExistsError("User with same email already exists")
         user = User(
             email=input.email.strip(),
             name=input.name.strip(),

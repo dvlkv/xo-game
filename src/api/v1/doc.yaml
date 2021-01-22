@@ -108,9 +108,7 @@ paths:
             schema:
               type: object
               properties:
-                height:
-                  type: integer
-                width:
+                size:
                   type: integer
       responses:
         "200":

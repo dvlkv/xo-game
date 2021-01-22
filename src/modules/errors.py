@@ -12,6 +12,14 @@ class UnauthorizedAccessError(Exception):
 
 
 @dataclass
-class EntityAlreadyExists(Exception):
+class EntityAlreadyExistsError(Exception):
     text: str
+
+
+class NotFoundError(Exception):
     pass
+
+
+@dataclass
+class InvalidOperationError(Exception):
+    text: str

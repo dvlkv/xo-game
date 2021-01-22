@@ -2,7 +2,7 @@ from aiohttp.web import Application
 from .routes import setup_v1_routes
 from aiohttp_swagger import setup_swagger
 from api.middlewares import error_middleware
-from context import context_middleware
+from context_middleware import context_middleware
 
 def create_api():
     app = Application(middlewares=[

@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from container import Container
 from context import Context
 from db.entities.user import User
-from modules import UserModel, EntityAlreadyExists
+from modules import UserModel, EntityAlreadyExistsError
 import pytest
 from utils import sha256
 
@@ -41,7 +41,7 @@ async def test_create_user(container: Container, session: AsyncSession):
 @pytest.mark.asyncio
 async def test_authenticate_fails(container: Container, session: AsyncSession):
     """Entity already exists"""
-    with pytest.raises(EntityAlreadyExists):
+    with pytest.raises(EntityAlreadyExistsError):
         async with session.begin():
             await container.Users().create_user(
                 Context(session, False, None),

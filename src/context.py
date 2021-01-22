@@ -21,25 +21,6 @@ async def create_context(authorized: bool, uid: Optional[int]) -> Context:
         await session.close()
 
 
-@middleware
-async def context_middleware(request: Request, handler):
-    """Creates execution context from request and saves it in request['ctx']"""
-    session = create_session()
-    request['ctx'] = Context(session, False, None)
-
-    # Run non-GET requests in transaction
-    #
-    # To mutate data in GET requests you need to begin transaction explicitly
-    if request.method != 'GET':
-        async with session.begin():
-            response = await handler(request)
-    else:
-        response = await handler(request)
-
-    await session.close()
-    return response
-
-
 class ViewWithContext(View):
     """Base class for views with context"""
     def ctx(self) -> Context:

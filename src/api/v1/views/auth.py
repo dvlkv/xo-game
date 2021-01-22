@@ -9,8 +9,8 @@ from modules import FieldError
 class AuthView(ViewWithContext):
     async def post(self):
         req = await self.request.json()
-        if not req['email']:
+        if not req.get('email'):
             raise FieldError('email', 'Email is empty')
-        if not req['password']:
+        if not req.get('password'):
             raise FieldError('password', 'Password is empty')
-        return json_response({"token": await Services.Auth().authorize_user(self.ctx(), req['email'], req['password'])})
+        return json_response({"token": await Services.Auth().authenticate_user(self.ctx(), req['email'], req['password'])})

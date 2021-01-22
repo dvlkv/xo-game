@@ -24,7 +24,7 @@ async def error_middleware(request, handler):
             },
             status=401,
         )
-    except EntityAlreadyExists as e:
+    except EntityAlreadyExistsError as e:
         response = json_response({
                 "error": True,
                 "text": e.text

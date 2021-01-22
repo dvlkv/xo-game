@@ -32,49 +32,52 @@ async def test_create_game(container: Container, ctx: Context):
         game = await container.Games().start_game(
             ctx,
             5,
-            10
         )
 
         # check if field is correct
-        assert game.width == 5
-        assert game.height == 10
+        assert game.size == 5
 
         # check if user should make first or second move
         assert game.next_seq == 1 or game.next_seq == 2
 
         # check if game is created by user
         assert game.uid == ctx.uid
-        assert len(game.field) == game.width * game.height
-        assert game.winned == False
+        assert len(game.field) == game.size * game.size
+        assert game.winner == 0
+
 
 @pytest.mark.asyncio
 async def test_create_game_fail_if_field_invalid(container: Container, ctx: Context):
-    async with pytest.raises(FieldError):
+    """Field sizes should follow the condition: 3 <= x, y <= 12"""
+    with pytest.raises(FieldError):
         async with ctx.session.begin():
             await container.Games().start_game(
                 ctx,
                 -5,
-                10
             )
-    async with pytest.raises(FieldError):
+    with pytest.raises(FieldError):
         async with ctx.session.begin():
             await container.Games().start_game(
                 ctx,
                 -5,
-                -10
             )
-    async with pytest.raises(FieldError):
+    with pytest.raises(FieldError):
         async with ctx.session.begin():
             await container.Games().start_game(
                 ctx,
                 2,
-                3
             )
-    async with pytest.raises(FieldError):
+    with pytest.raises(FieldError):
         async with ctx.session.begin():
             await container.Games().start_game(
                 ctx,
                 2,
-                1
             )
+    with pytest.raises(FieldError):
+        async with ctx.session.begin():
+            await container.Games().start_game(
+                ctx,
+                13,
+            )
+
 
