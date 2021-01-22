@@ -11,6 +11,8 @@ aiohttp-swagger = "*"
 dependency-injector = "*"
 pytest-asyncio = "*"
 pytest = "*"
+python-dotenv = "*"
+asyncpg = "*"
 
 [dev-packages]
 

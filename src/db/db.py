@@ -1,6 +1,8 @@
 from typing import Union, Optional
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, AsyncEngine
 from sqlalchemy.engine import url
+
+from utils.db import db_exists, create_db
 from .base import Base
 
 _engine: Optional[AsyncEngine] = None
@@ -10,6 +12,9 @@ async def setup_db(connection_string: Union[str, url.URL]):
     global _engine
     if _engine:
         return _engine
+
+    if not await db_exists(connection_string):
+        await create_db(connection_string)
 
     _engine = create_async_engine(
         connection_string,

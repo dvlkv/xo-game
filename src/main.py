@@ -4,6 +4,11 @@ from db.db import setup_db
 from seed_db import seed_db
 from api import create_api
 
+# load .env for development
+from dotenv import load_dotenv
+load_dotenv()
+
+
 
 async def init_app() -> Application:
     # Setup container

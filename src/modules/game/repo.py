@@ -10,7 +10,6 @@ from sqlalchemy import *
 
 class GameRepo:
     async def get_games(self, ctx: Context, uid: int, cursor: int, count: int) -> PaginatedCollection[Game]:
-        print(cursor)
         result = await ctx.session.execute(
             select(Game).where(Game.uid == uid, Game.id > cursor).order_by(Game.id).limit(count)
         )

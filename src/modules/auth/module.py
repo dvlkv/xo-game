@@ -5,8 +5,6 @@ from utils import sha256
 from typing import NamedTuple, Optional
 import jwt
 
-AUTH_SECRET = "some secret that should be stored in config"
-
 
 class JWTInfo(NamedTuple):
     id: int
@@ -17,8 +15,9 @@ class JWTInfo(NamedTuple):
 class AuthModule:
     """Contains tools for JWT token management"""
 
-    def __init__(self, users: UserModule):
+    def __init__(self, users: UserModule, secret: str):
         self.users = users
+        self.secret = secret
 
     async def authenticate_user(self, ctx: Context, email: str, password: str) -> str:
         """Authenticates user and returns JWT token containing user info"""
@@ -31,7 +30,7 @@ class AuthModule:
 
         encoded = jwt.encode(
             {"id": user.id, "email": user.email, "name": user.name},
-            AUTH_SECRET,
+            self.secret,
             algorithm="HS256"
         )
         return encoded
@@ -39,7 +38,7 @@ class AuthModule:
     async def authorize_user(self, ctx: Context, token: str) -> Optional[User]:
         """Authorizes user by JWT token, returns entity if token is valid"""
         try:
-            decoded = jwt.decode(token, AUTH_SECRET, algorithms=["HS256"])
+            decoded = jwt.decode(token, self.secret, algorithms=["HS256"])
             return await self.users.user_by_id(ctx, int(decoded['id']))
         except jwt.DecodeError:
             return None
