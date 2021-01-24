@@ -6,7 +6,6 @@ from modules import FieldError
 
 
 class GamesView(ViewWithContext):
-    #TODO: add cursor & count to docs
     @authorized
     async def get(self):
         query = self.request.query
