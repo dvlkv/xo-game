@@ -17,6 +17,7 @@ services:
       - pg_data:/var/lib/postgresql/data
   nginx:
     image: staticfloat/nginx-certbot
+    restart: unless-stopped
     ports:
       - 80:80/tcp
       - 443:443/tcp
