@@ -371,7 +371,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GenericError'
+                $ref: '#/components/schemas/FieldError'
         "500":
           description: "Unexpected server error. Returns error object"
           content:
