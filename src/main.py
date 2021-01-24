@@ -1,4 +1,4 @@
-from aiohttp.web import Application, run_app
+from aiohttp.web import Application, run_app, HTTPFound
 from container import setup_container
 from db.db import setup_db
 from seed_db import seed_db
@@ -8,6 +8,9 @@ from api import create_api
 from dotenv import load_dotenv
 load_dotenv()
 
+
+async def root_handler(_):
+    raise HTTPFound(location='/api/v1/help')
 
 
 async def init_app() -> Application:
@@ -21,6 +24,7 @@ async def init_app() -> Application:
     # Setup web server
     app = Application()
     app.add_subapp('/api/v1', create_api())
+    app.router.add_get('/', root_handler)
 
     return app
 

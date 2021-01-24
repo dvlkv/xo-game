@@ -10,8 +10,6 @@ _engine: Optional[AsyncEngine] = None
 
 async def setup_db(connection_string: Union[str, url.URL]):
     global _engine
-    if _engine:
-        return _engine
 
     if not await db_exists(connection_string):
         await create_db(connection_string)

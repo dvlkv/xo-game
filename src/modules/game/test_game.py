@@ -42,7 +42,8 @@ async def test_create_game(container: Container, ctx: Context):
 
         # check if game is created by user
         assert game.uid == ctx.uid
-        assert len(game.field) == game.size * game.size
+        assert len(game.field) == game.size
+        assert len(game.field[0]) == game.size
         assert game.winner == 0
 
 

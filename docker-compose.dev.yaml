@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  app:
+    build: .
+    environment:
+      DB_STRING: "postgresql+asyncpg://postgres:postgres@db/XOGame"
+      AUTH_SECRET: "sample secret"
+    ports:
+    - 8080:8080
+    links:
+      - db
+  db:
+    image: postgres:13.1
+    restart: always
+    ports:
+    - 5433:5432
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+
+volumes:
+  pg_data: {}
+  letsencrypt: {}

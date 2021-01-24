@@ -16,18 +16,22 @@ def event_loop():
 
 @pytest.fixture(scope='module')
 def container():
-    return setup_container()
+    container = setup_container()
+    container.config.set('auth.secret', 'some secret that should be stored in config')
+    return container
+
 
 @pytest.fixture(scope='module')
 def seed_test_data():
+    """Override this fixture to seed test data"""
     async def f(session):
         pass
     return f
 
 
 @pytest.fixture(scope='module', autouse=True)
-async def database(seed_test_data):
-    url = await create_test_db("postgresql+asyncpg://postgres:postgres@localhost")
+async def database(seed_test_data, container):
+    url = await create_test_db(container.config.db.connection_string())
     engine = await setup_db(url)
     await seed_db()
 
