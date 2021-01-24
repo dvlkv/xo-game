@@ -367,7 +367,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/GameWithMoves'
         "400":
-          description: "Invalid parameters. Returns error object with current game"
+          description: "Invalid parameters. Returns error object"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
         "500":
           description: "Unexpected server error. Returns error object"
           content:
