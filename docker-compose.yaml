@@ -24,7 +24,7 @@ services:
     environment:
       CERTBOT_EMAIL: hi@dvlkv.ru
     volumes:
-      - ./deploy/nginx/conf.d:/etc/nginx/conf.d/:ro
+      - ./deploy/nginx/conf.d:/etc/nginx/conf.d/
       - letsencrypt:/etc/letsencrypt
     links:
       - app
